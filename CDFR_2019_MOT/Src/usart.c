@@ -50,13 +50,13 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
 
-#include "gpio.h"
 
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart3;
+UART_HandleTypeDef huart6;
 
 /* USART3 init function */
 
@@ -77,6 +77,25 @@ void MX_USART3_UART_Init(void)
   }
 
 }
+/* USART6 init function */
+
+void MX_USART6_UART_Init(void)
+{
+
+  huart6.Instance = USART6;
+  huart6.Init.BaudRate = 57600;
+  huart6.Init.WordLength = UART_WORDLENGTH_8B;
+  huart6.Init.StopBits = UART_STOPBITS_1;
+  huart6.Init.Parity = UART_PARITY_NONE;
+  huart6.Init.Mode = UART_MODE_TX_RX;
+  huart6.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart6.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart6) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
 
 void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 {
@@ -89,10 +108,10 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
   /* USER CODE END USART3_MspInit 0 */
     /* USART3 clock enable */
     __HAL_RCC_USART3_CLK_ENABLE();
-  
-    /**USART3 GPIO Configuration    
+
+    /**USART3 GPIO Configuration
     PD8     ------> USART3_TX
-    PD9     ------> USART3_RX 
+    PD9     ------> USART3_RX
     */
     GPIO_InitStruct.Pin = STLK_RX_Pin|STLK_TX_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -101,12 +120,32 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     GPIO_InitStruct.Alternate = GPIO_AF7_USART3;
     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-    /* USART3 interrupt Init */
-    HAL_NVIC_SetPriority(USART3_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(USART3_IRQn);
   /* USER CODE BEGIN USART3_MspInit 1 */
 
   /* USER CODE END USART3_MspInit 1 */
+  }
+  else if(uartHandle->Instance==USART6)
+  {
+  /* USER CODE BEGIN USART6_MspInit 0 */
+
+  /* USER CODE END USART6_MspInit 0 */
+    /* USART6 clock enable */
+    __HAL_RCC_USART6_CLK_ENABLE();
+
+    /**USART6 GPIO Configuration
+    PG9     ------> USART6_RX
+    PG14     ------> USART6_TX
+    */
+    GPIO_InitStruct.Pin = GPIO_PIN_9|GPIO_PIN_14;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF8_USART6;
+    HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+
+  /* USER CODE BEGIN USART6_MspInit 1 */
+
+  /* USER CODE END USART6_MspInit 1 */
   }
 }
 
@@ -120,23 +159,53 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
   /* USER CODE END USART3_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_USART3_CLK_DISABLE();
-  
-    /**USART3 GPIO Configuration    
+
+    /**USART3 GPIO Configuration
     PD8     ------> USART3_TX
-    PD9     ------> USART3_RX 
+    PD9     ------> USART3_RX
     */
     HAL_GPIO_DeInit(GPIOD, STLK_RX_Pin|STLK_TX_Pin);
 
-    /* USART3 interrupt Deinit */
-    HAL_NVIC_DisableIRQ(USART3_IRQn);
   /* USER CODE BEGIN USART3_MspDeInit 1 */
 
   /* USER CODE END USART3_MspDeInit 1 */
   }
-} 
+  else if(uartHandle->Instance==USART6)
+  {
+  /* USER CODE BEGIN USART6_MspDeInit 0 */
+
+  /* USER CODE END USART6_MspDeInit 0 */
+    /* Peripheral clock disable */
+    __HAL_RCC_USART6_CLK_DISABLE();
+
+    /**USART6 GPIO Configuration
+    PG9     ------> USART6_RX
+    PG14     ------> USART6_TX
+    */
+    HAL_GPIO_DeInit(GPIOG, GPIO_PIN_9|GPIO_PIN_14);
+
+  /* USER CODE BEGIN USART6_MspDeInit 1 */
+
+  /* USER CODE END USART6_MspDeInit 1 */
+  }
+}
 
 /* USER CODE BEGIN 1 */
+int __io_putchar(int ch){
+	USART6->DR = ch;
+	// Loop while character not sent
+	while(!(USART6->SR & USART_SR_TXE));
+	USART6->SR &= ~USART_SR_TXE;
+	return(ch);
+}
 
+int __io_getchar(void){
+
+  // Loop until the reception buffer is not empty
+  while(!(USART6->SR & USART_SR_RXNE));
+
+  return((int)USART6->DR);
+}
 /* USER CODE END 1 */
 
 /**

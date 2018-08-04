@@ -36,7 +36,7 @@
 #include "stm32f4xx_it.h"
 
 /* USER CODE BEGIN 0 */
-
+extern char g_uart_buff;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -48,6 +48,8 @@ extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
 extern UART_HandleTypeDef huart3;
+extern UART_HandleTypeDef huart6;
+
 
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
@@ -228,6 +230,23 @@ void USART3_IRQHandler(void)
   /* USER CODE END USART3_IRQn 1 */
 }
 
+/**
+* @brief This function handles USART6 global interrupt.
+*/
+void USART6_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART6_IRQn 0 */
+	if(USART6->SR & USART_SR_RXNE){
+		USART6->SR &= ~USART_SR_RXNE;
+
+		g_uart_buff = USART6->DR;
+	}
+  /* USER CODE END USART6_IRQn 0 */
+  HAL_UART_IRQHandler(&huart6);
+  /* USER CODE BEGIN USART6_IRQn 1 */
+
+  /* USER CODE END USART6_IRQn 1 */
+}
 /**
 * @brief This function handles EXTI line[15:10] interrupts.
 */

@@ -53,7 +53,9 @@
 #include "lwip.h"
 #include "tim.h"
 #include "usart.h"
+#include <stdio.h>
 #include "gpio.h"
+#include "tcp_echoserver.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -63,7 +65,7 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+char g_uart_buff;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -108,6 +110,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART3_UART_Init();
+  MX_USART6_UART_Init();
   MX_TIM4_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
@@ -120,6 +123,7 @@ int main(void)
   // Initialize the TCP Echo Server
   tcp_echoserver_init();
 
+  int flag=0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -127,6 +131,15 @@ int main(void)
   while (1)
   {
 
+	  if(F_GPIO_GetLBtn()){
+		 if(flag ==0){
+			F_GPIO_ToogleLedRed();
+		  printf("Pour essai\n\r");
+		 }
+		 flag =1;
+	  }else{
+		 flag =0;
+	  }
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
