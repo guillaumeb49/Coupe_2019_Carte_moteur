@@ -117,6 +117,9 @@ int main(void)
   MX_LWIP_Init();
   /* USER CODE BEGIN 2 */
 
+  // Initialize the TCP Echo Server
+  tcp_echoserver_init();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -127,6 +130,9 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
+
+	  // Handle the TCP connection
+	  MX_LWIP_Process();
 
   }
   /* USER CODE END 3 */

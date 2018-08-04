@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE targetDefinitions [ 
+	<!ELEMENT targetDefinitions (board)>
+	<!ELEMENT board (name, dbgIF+, dbgDEV, mcuId)>
+	<!ELEMENT name (#PCDATA)>
+	<!ELEMENT dbgIF (#PCDATA)>
+	<!ELEMENT dbgDEV (#PCDATA)>
+	<!ELEMENT mcuId (#PCDATA)>
+	<!ATTLIST board id CDATA #REQUIRED>
+]>
+
+<targetDefinitions>
+  <board id="nucleo-f429zi">
+    <name>NUCLEO-F429ZI</name>
+<<<<<<< HEAD
+    <dbgIF>SWD</dbgIF>
+    <dbgIF>JTAG</dbgIF>
+=======
+    <dbgIF>JTAG</dbgIF>
+    <dbgIF>SWD</dbgIF>
+>>>>>>> cf3fcb3c8ae50953a840e99839e80bdef9fc92d2
+    <dbgDEV>ST-Link</dbgDEV>
+    <mcuId>stm32f429zitx</mcuId>
+  </board>
+</targetDefinitions>
