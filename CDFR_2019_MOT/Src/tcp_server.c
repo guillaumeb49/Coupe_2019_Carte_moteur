@@ -38,6 +38,7 @@
 #include "lwip/debug.h"
 #include "lwip/stats.h"
 #include "lwip/tcp.h"
+#include "A_commandes.h"
 
 #if LWIP_TCP
 
