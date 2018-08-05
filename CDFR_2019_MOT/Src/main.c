@@ -54,6 +54,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+#include "tcp_server.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -118,7 +119,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   // Initialize the TCP Echo Server
-  tcp_echoserver_init();
+  tcp_server_init();
 
   /* USER CODE END 2 */
 
