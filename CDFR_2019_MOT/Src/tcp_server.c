@@ -41,7 +41,6 @@
 #include "A_commandes.h"
 #include "tcp_server.h"
 
-#include "tcp_echoserver.h"
 
 #if LWIP_TCP
 
