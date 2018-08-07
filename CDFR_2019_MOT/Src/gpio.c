@@ -73,13 +73,14 @@ void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct;
 
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOF_CLK_ENABLE();
-  __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOG_CLK_ENABLE();
+  __HAL_RCC_GPIOH_CLK_ENABLE();
+
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
@@ -156,7 +157,33 @@ void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 2 */
+void F_GPIO_SetLedRed(int state){
+	(state) ? (GPIOB->ODR |= LED_Red) : (GPIOB->ODR &= ~LED_Red) ;
+}
 
+void F_GPIO_SetLedBlue(int state){
+	// Led sur PB7
+	(state) ? (GPIOB->ODR |= LED_Blue) : (GPIOB->ODR &= ~LED_Blue) ;
+}
+
+void F_GPIO_SetLedGreen(int state){
+	// Led sur PB14
+	(state) ? (GPIOB->ODR |= LED_Green) : (GPIOB->ODR &= ~LED_Green) ;
+}
+
+void F_GPIO_ToogleLedRed(void){
+	if((GPIOB->ODR & LED_Red) > 0){
+		GPIOB->ODR &= ~LED_Red;
+	}else{
+		GPIOB->ODR |= LED_Red;
+	}
+}
+
+int F_GPIO_GetLBtn(void){
+	int l_state = 0;
+	(GPIOC->IDR & BP_NUCLEO) ? (l_state=1) : (l_state=0) ;
+	return l_state;
+}
 /* USER CODE END 2 */
 
 /**

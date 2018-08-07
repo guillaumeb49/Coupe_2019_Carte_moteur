@@ -41,6 +41,8 @@
 #include "A_commandes.h"
 #include "tcp_server.h"
 
+#include "tcp_echoserver.h"
+
 #if LWIP_TCP
 
 static struct tcp_pcb *tcp_echoserver_pcb;

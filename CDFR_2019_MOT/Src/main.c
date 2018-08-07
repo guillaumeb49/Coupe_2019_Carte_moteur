@@ -53,9 +53,9 @@
 #include "lwip.h"
 #include "tim.h"
 #include "usart.h"
-#include "gpio.h"
-#include "tcp_server.h"
-#include "A_commandes.h"
+#include <stdio.h>
+#include "tcp_echoserver.h"
+#include "D_LCD.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -65,7 +65,7 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+char g_uart_buff;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -109,32 +109,54 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_USART6_UART_Init();
   MX_USART3_UART_Init();
+  
   MX_TIM4_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
+  
   MX_I2C1_Init();
   MX_I2C2_Init();
   MX_I2C3_Init();
+  
   MX_LWIP_Init();
   /* USER CODE BEGIN 2 */
+
 
   // Initialize the TCP Echo Server
   tcp_server_init();
 
+  int flag=0;
+
   /* USER CODE END 2 */
+	F_LCD_Init(I2C_LCD_ADD,16, 2, LCD_5x8DOTS);
+
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
 
+	  if(F_GPIO_GetLBtn()){
+		 if(flag ==0){
+			F_GPIO_ToogleLedRed();
+			printf("Echooo : %c\n\r",g_uart_buff);
+
+			// Curseur à 0;0
+			F_LCD_PrintPosition(123,456,-500);
+
+		  }
+		 flag =1;
+	  }else{
+		 flag =0;
+	  }
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
 
 	  // Handle the TCP connection
-	  MX_LWIP_Process();
+	 // MX_LWIP_Process();
 
 	  // Test if data received from the Raspberry Pi through TCP
 	  if(TCP_data_available == 1)
