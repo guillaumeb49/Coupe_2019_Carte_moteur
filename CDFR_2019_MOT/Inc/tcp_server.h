@@ -32,4 +32,5 @@
 
 void tcp_server_init(void);
 
+extern volatile uint8_t TCP_data_available;
 #endif /* __TCP_ECHOSERVER */

@@ -136,6 +136,13 @@ int main(void)
 	  // Handle the TCP connection
 	  MX_LWIP_Process();
 
+	  // Test if data received from the Raspberry Pi through TCP
+	  if(TCP_data_available == 1)
+	  {
+
+		  TCP_data_available = 0;
+	  }
+
   }
   /* USER CODE END 3 */
 

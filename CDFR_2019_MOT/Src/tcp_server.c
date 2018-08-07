@@ -39,6 +39,7 @@
 #include "lwip/stats.h"
 #include "lwip/tcp.h"
 #include "A_commandes.h"
+#include "tcp_server.h"
 
 #if LWIP_TCP
 
@@ -71,6 +72,8 @@ static err_t tcp_server_sent(void *arg, struct tcp_pcb *tpcb, u16_t len);
 static void tcp_server_send(struct tcp_pcb *tpcb, struct tcp_echoserver_struct *es);
 static void tcp_server_connection_close(struct tcp_pcb *tpcb, struct tcp_echoserver_struct *es);
 
+
+volatile uint8_t TCP_data_available;
 
 /**
   * @brief  Initializes the tcp echo server
@@ -227,7 +230,7 @@ static err_t tcp_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, er
     if(es->p == NULL)
     {
       es->p = p;
-
+      TCP_data_available = 1;
       /* send back received data */
       tcp_server_send(tpcb, es);
     }

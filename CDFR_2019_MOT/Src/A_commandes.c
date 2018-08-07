@@ -5,4 +5,15 @@
  *      Author: guillaume
  */
 
+/**
+ * Get the info and build the TCP packet accordingly
+ */
+void F_Cmd_Info()
+{
 
+}
+
+void F_Process_Command()
+{
+
+}
