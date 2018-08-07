@@ -58,6 +58,7 @@
 #include "main.h"
 
 
+
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
@@ -67,6 +68,9 @@ extern I2C_HandleTypeDef hi2c2;
 extern I2C_HandleTypeDef hi2c3;
 
 /* USER CODE BEGIN Private defines */
+#define I2C_TIMEOUT 	100000
+#define I2C_STATUS_OK  	1
+#define I2C_STATUS_KO 	0
 
 /* USER CODE END Private defines */
 
@@ -77,7 +81,11 @@ void MX_I2C2_Init(void);
 void MX_I2C3_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+int Write_I2C1(uint8_t slave_adress, uint8_t *tab_to_send, uint8_t size);
+int F_I2C1_WriteValue(uint8_t slave_addr, uint8_t value);
+int F_I2C1_WriteRegister(uint8_t slave_addr, uint8_t register_addr, uint8_t value);
+int F_I2C1_ReadRegister(uint8_t slave_addr, uint8_t register_addr, uint8_t *value_read);
+int F_I2C1_ReadMultipleRegister(uint8_t slave_addr, uint8_t register_addr, uint8_t nbData ,uint8_t *value_read);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

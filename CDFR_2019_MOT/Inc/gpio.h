@@ -76,7 +76,7 @@ void F_GPIO_SetLedRed(int state);
 void F_GPIO_SetLedBlue(int state);
 void F_GPIO_SetLedGreen(int state);
 void F_GPIO_ToogleLedRed(void);
-int F_GPIO_GetLBtn(void);
+int  F_GPIO_GetLBtn(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

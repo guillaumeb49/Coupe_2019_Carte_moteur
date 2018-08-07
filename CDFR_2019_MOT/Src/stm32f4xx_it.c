@@ -240,6 +240,7 @@ void USART6_IRQHandler(void)
 		USART6->SR &= ~USART_SR_RXNE;
 
 		g_uart_buff = USART6->DR;
+		F_GPIO_ToogleLedRed();
 	}
   /* USER CODE END USART6_IRQn 0 */
   HAL_UART_IRQHandler(&huart6);
