@@ -30,7 +30,14 @@
 #ifndef __TCP_ECHOSERVER_H__
 #define __TCP_ECHOSERVER_H__
 
+#include "lwip/debug.h"
+#include "lwip/stats.h"
+#include "lwip/tcp.h"
+#include "A_commandes.h"
+#include "A_TCP.h"
 void tcp_server_init(void);
 
 extern volatile uint8_t TCP_data_available;
+extern struct tcp_pcb *tcp_echoserver_pcb;
+
 #endif /* __TCP_ECHOSERVER */

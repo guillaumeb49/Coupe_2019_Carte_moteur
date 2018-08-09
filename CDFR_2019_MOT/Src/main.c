@@ -56,6 +56,7 @@
 #include <stdio.h>
 #include "tcp_server.h"
 #include "D_LCD.h"
+#include "A_TCP.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -88,7 +89,7 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	struct tcp_command s_cmd;
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -155,15 +156,33 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
 
-	  // Handle the TCP connection
-	 // MX_LWIP_Process();
+	  // Test if TCP IP link is up
+	  // test if IP address allocated
+	  //if(->dhcp->state == DHCP_BOUND,)
+	  //{
+		  // Handle the TCP connection
+		 	 MX_LWIP_Process();
 
-	  // Test if data received from the Raspberry Pi through TCP
-	  if(TCP_data_available == 1)
-	  {
+		 	  // Test if data received from the Raspberry Pi through TCP
+		 	  if(TCP_data_available == 1)
+		 	  {
 
-		  TCP_data_available = 0;
-	  }
+		 		  TCP_data_available = 0;
+		 		 F_GPIO_ToogleLedRed();
+		 		 s_cmd.id = '1';
+		 		s_cmd.nb_octet = '4';
+		 		s_cmd.nb_param = '2';
+		 		s_cmd.params[0] = 'G';
+		 		s_cmd.params[1] = 'u';
+		 		s_cmd.params[2] = 'i';
+		 		s_cmd.params[3] = '\0';
+
+		 		// F_send_TCP_command(s_cmd);
+
+		 		TCP_data_available = 0;
+
+		 	  }
+	  //}
 
   }
   /* USER CODE END 3 */

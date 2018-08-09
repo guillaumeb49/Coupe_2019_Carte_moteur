@@ -35,16 +35,16 @@
  /* This file was modified by ST */
 
 
-#include "lwip/debug.h"
-#include "lwip/stats.h"
-#include "lwip/tcp.h"
-#include "A_commandes.h"
+
 #include "tcp_server.h"
 
 
 #if LWIP_TCP
 
-static struct tcp_pcb *tcp_echoserver_pcb;
+struct tcp_pcb *tcp_echoserver_pcb;
+
+struct tcp_command s_cmd_received;
+
 
 /* ECHO protocol states */
 enum tcp_echoserver_states
@@ -173,6 +173,7 @@ static err_t tcp_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, er
   struct tcp_echoserver_struct *es;
   err_t ret_err;
 
+
   LWIP_ASSERT("arg != NULL",arg != NULL);
 
   es = (struct tcp_echoserver_struct *)arg;
@@ -221,9 +222,11 @@ static err_t tcp_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, er
     tcp_sent(tpcb, tcp_server_sent);
 
     /* send back the received data (echo) */
-    tcp_server_send(tpcb, es);
-
+   // tcp_server_send(tpcb, es);
+    TCP_data_available = 1;
+    F_TCP_paquetTocmd(p, &s_cmd_received);
     ret_err = ERR_OK;
+
   }
   else if (es->state == ES_RECEIVED)
   {
@@ -234,6 +237,7 @@ static err_t tcp_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, er
       TCP_data_available = 1;
       /* send back received data */
       tcp_server_send(tpcb, es);
+      TCP_data_available = 1;
     }
     else
     {
@@ -359,6 +363,7 @@ static void tcp_server_send(struct tcp_pcb *tpcb, struct tcp_echoserver_struct *
 {
   struct pbuf *ptr;
   err_t wr_err = ERR_OK;
+
 
   while ((wr_err == ERR_OK) &&
          (es->p != NULL) &&
