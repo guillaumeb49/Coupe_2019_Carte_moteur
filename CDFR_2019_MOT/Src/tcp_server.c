@@ -42,6 +42,7 @@
 #if LWIP_TCP
 
 struct tcp_pcb *tcp_echoserver_pcb;
+struct tcp_pcb *tcp_server_pcb;
 
 struct tcp_command s_cmd_received;
 
@@ -129,6 +130,7 @@ static err_t tcp_server_accept(void *arg, struct tcp_pcb *newpcb, err_t err)
 
   /* allocate structure es to maintain tcp connection informations */
   es = (struct tcp_echoserver_struct *)mem_malloc(sizeof(struct tcp_echoserver_struct));
+
   if (es != NULL)
   {
     es->state = ES_ACCEPTED;
@@ -172,6 +174,9 @@ static err_t tcp_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, er
 {
   struct tcp_echoserver_struct *es;
   err_t ret_err;
+  uint8_t array[NB_OCTETS_CMD] = {0};
+  struct tcp_answer s_cmd_answer;
+  struct tcp_command s_cmd_received;
 
 
   LWIP_ASSERT("arg != NULL",arg != NULL);
@@ -215,16 +220,31 @@ static err_t tcp_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, er
     /* first data chunk in p->payload */
     es->state = ES_RECEIVED;
 
-    /* store reference to incoming pbuf (chain) */
-    es->p = p;
+    // Get the command from the data received over TCP
+    F_TCP_paquetTocmd(p, &s_cmd_received);
 
+    // Process the command received
+
+    // Send back the answer of the command received
+
+
+    F_Process_Command(s_cmd_received,&s_cmd_answer);
+
+
+    F_TCP_answerTotab(array, s_cmd_answer);
+
+    p->payload = array;
+    p->len = NB_OCTETS_CMD;
+    p->tot_len = NB_OCTETS_CMD;
+
+    /* store reference to incoming pbuf (chain) */
+        es->p = p;
     /* initialize LwIP tcp_sent callback function */
     tcp_sent(tpcb, tcp_server_sent);
 
     /* send back the received data (echo) */
-   // tcp_server_send(tpcb, es);
-    TCP_data_available = 1;
-    F_TCP_paquetTocmd(p, &s_cmd_received);
+    tcp_server_send(tpcb, es);
+
     ret_err = ERR_OK;
 
   }
@@ -233,11 +253,29 @@ static err_t tcp_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, er
     /* more data received from client and previous data has been already sent*/
     if(es->p == NULL)
     {
-      es->p = p;
-      TCP_data_available = 1;
+
+    	// Get the command from the data received over TCP
+		F_TCP_paquetTocmd(p, &s_cmd_received);
+
+		// Process the command received
+
+		// Send back the answer of the command received
+
+
+		F_Process_Command(s_cmd_received,&s_cmd_answer);
+
+
+		F_TCP_answerTotab(array, s_cmd_answer);
+
+		p->payload = array;
+		p->len = NB_OCTETS_CMD;
+		p->tot_len = NB_OCTETS_CMD;
+
+		es->p = p;
+
       /* send back received data */
       tcp_server_send(tpcb, es);
-      TCP_data_available = 1;
+
     }
     else
     {
