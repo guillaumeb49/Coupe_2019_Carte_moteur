@@ -121,7 +121,10 @@ int main(void)
   MX_I2C3_Init();
   
   MX_LWIP_Init();
+
   /* USER CODE BEGIN 2 */
+
+  F_Init_VL53L1X();
 
 
   // Initialize the TCP Echo Server

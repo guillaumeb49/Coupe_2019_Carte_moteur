@@ -103,7 +103,27 @@ void MX_I2C1_Init(void)
 void MX_I2C2_Init(void)
 {
 
-  hi2c2.Instance = I2C2;
+	GPIO_InitTypeDef GPIO_InitStruct;
+
+	GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
+	GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	GPIO_InitStruct.Alternate = GPIO_AF4_I2C2;
+	HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+
+	RCC->APB1ENR |= RCC_APB1ENR_I2C2EN;	// Enable peripheral clock
+
+	I2C2->CR2 &= ~I2C_CR2_FREQ;
+	I2C2->CR2 |=  10;					// Set peripheral clock speed to 30Mhz
+
+	I2C2->CCR &= ~I2C_CCR_FS ;			// Low speed mode : 100kHz
+	I2C2->CCR |= 200 ;
+
+	I2C2->CR1 |= I2C_CR1_PE;
+	I2C2->CR1 |= I2C_CR1_ACK;
+
+ /* hi2c2.Instance = I2C2;
   hi2c2.Init.ClockSpeed = 100000;
   hi2c2.Init.DutyCycle = I2C_DUTYCYCLE_2;
   hi2c2.Init.OwnAddress1 = 0;
@@ -115,7 +135,7 @@ void MX_I2C2_Init(void)
   if (HAL_I2C_Init(&hi2c2) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
-  }
+  }*/
 
 }
 /* I2C3 init function */
@@ -569,6 +589,120 @@ int F_I2C1_ReadMultipleRegister(uint8_t slave_addr, uint8_t register_addr, uint8
 	I2C1->CR1 |= I2C_CR1_STOP;
 	return i2c_status;
 }
+
+
+
+
+
+/** I2C2 *****/
+/**
+ * Write a single value in a slave register
+ */
+int F_I2C2_WriteRegister(uint8_t slave_addr, uint8_t register_addr, uint8_t value){
+	int i2c_status = I2C_STATUS_OK;
+	uint32_t timeout = 0;
+//	uint16_t i = 0;
+
+	// Send start
+	I2C2->CR1 |= I2C_CR1_START; // send START bit
+	while (!(I2C2->SR1 & I2C_SR1_SB)){	// wait for START condition (SB=1)
+		if(timeout > I2C_TIMEOUT){
+			printf("Erreur : Start Condition \n");
+			return I2C_STATUS_KO;
+		}
+	timeout++;
+	}
+	timeout=0;
+	// Send slave address
+	I2C2->DR = (slave_addr<<1) & 0xFE  ;	// address + write
+	while (!(I2C2->SR1 & I2C_SR1_ADDR)){// wait for ADDRESS sent (ADDR=1)
+		if(timeout > I2C_TIMEOUT){
+			printf("Erreur : Send slave address \n");
+			return I2C_STATUS_KO;
+		}
+		timeout++;
+	}
+	timeout=0;
+	i2c_status = I2C2->SR2; // read status to clear flag
+
+	// Send register address
+	I2C2->DR = register_addr;
+	while ((!(I2C2->SR1 & I2C_SR1_TXE)) && (!(I2C2->SR1 & I2C_SR1_BTF))); // wait for DR empty (TxE)
+
+		// Send new value to write to the register
+	I2C2->DR = value;
+	while ((!(I2C2->SR1 & I2C_SR1_TXE)) && (!(I2C2->SR1 & I2C_SR1_BTF))); // wait for DR empty (TxE)
+
+	I2C2->CR1 |= I2C_CR1_STOP; // send STOP bit
+	return i2c_status;
+}
+
+/**
+ * Read a single value from a slave register
+ */
+int F_I2C2_ReadRegister(uint8_t slave_addr, uint8_t register_addr,uint8_t register_addr_2, uint8_t *value_read){
+	int i2c_status = I2C_STATUS_OK;	// Init return value to error
+	int timeout=0;
+
+	// Send start
+	I2C2->CR1 |= I2C_CR1_START; // send START bit
+	while (!(I2C2->SR1 & I2C_SR1_SB)){	// wait for START condition (SB=1)
+		if(timeout > I2C_TIMEOUT){
+			printf("Erreur : Send slave start \n");
+			return I2C_STATUS_KO;
+		}
+	timeout++;
+	}
+	// Send slave address
+	I2C2->DR = slave_addr & 0xFE  ;	// address + write
+	while (!(I2C2->SR1 & I2C_SR1_ADDR)){// wait for ADDRESS sent (ADDR=1)
+		if(timeout > I2C_TIMEOUT){
+			printf("Erreur : Send slave address \n");
+			return I2C_STATUS_KO;
+		}
+		timeout++;
+	}
+
+	i2c_status = I2C2->SR2; // read status to clear flag
+
+	// Send register address
+	I2C2->DR = register_addr;
+	while ((!(I2C2->SR1 & I2C_SR1_TXE)) && (!(I2C2->SR1 & I2C_SR1_BTF))); // wait for DR empty (TxE)
+
+	// Send register address
+	I2C2->DR = register_addr_2;
+	while ((!(I2C2->SR1 & I2C_SR1_TXE)) && (!(I2C2->SR1 & I2C_SR1_BTF))); // wait for DR empty (TxE)
+
+
+	// Send repeated start
+	I2C2->CR1 |= I2C_CR1_START; // send START bit
+	while (!(I2C2->SR1 & I2C_SR1_SB));	// wait for START condition (SB=1)
+
+	timeout=0;
+	// Send slave address
+	I2C2->DR = slave_addr | 1;	// address + read
+	while (!(I2C2->SR1 & I2C_SR1_ADDR)){ // wait for ADDRESS sent (ADDR=1)
+		if(timeout > I2C_TIMEOUT){
+			printf("Erreur : Send slave address \n");
+			return I2C_STATUS_KO;
+		}
+		timeout++;
+	}
+	i2c_status = I2C2->SR2; // read status to clear flag
+
+	// prepare NACK
+	I2C2->CR1 &= ~I2C_CR1_ACK;
+
+	// Wait for Data available
+	while (!(I2C2->SR1 & I2C_SR1_RXNE));
+	*value_read = I2C2->DR; 			// Address in chip -> DR & write
+
+	// send STOP bit
+	I2C2->CR1 |= I2C_CR1_STOP;
+	return i2c_status;
+}
+
+
 
 /* USER CODE END 1 */
 
