@@ -63,17 +63,14 @@
 
 #ifndef _VL53L1_PLATFORM_USER_DATA_H_
 #define _VL53L1_PLATFORM_USER_DATA_H_
-// #include "stm32xxx_hal.h"
-#include "vl53l1_def.h"
+#include <stm32f4xx_hal.h>
+#include "../core/vl53l1_def.h"
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
 
-typedef struct {
-    uint32_t dummy;
-} I2C_HandleTypeDef;
 
 typedef struct {
 

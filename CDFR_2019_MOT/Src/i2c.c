@@ -114,7 +114,7 @@ void MX_I2C2_Init(void)
 
 	RCC->APB1ENR |= RCC_APB1ENR_I2C2EN;	// Enable peripheral clock
 
-	I2C2->CR2 &= ~I2C_CR2_FREQ;
+	/*I2C2->CR2 &= ~I2C_CR2_FREQ;
 	I2C2->CR2 |=  10;					// Set peripheral clock speed to 30Mhz
 
 	I2C2->CCR &= ~I2C_CCR_FS ;			// Low speed mode : 100kHz
@@ -122,8 +122,8 @@ void MX_I2C2_Init(void)
 
 	I2C2->CR1 |= I2C_CR1_PE;
 	I2C2->CR1 |= I2C_CR1_ACK;
-
- /* hi2c2.Instance = I2C2;
+*/
+  hi2c2.Instance = I2C2;
   hi2c2.Init.ClockSpeed = 100000;
   hi2c2.Init.DutyCycle = I2C_DUTYCYCLE_2;
   hi2c2.Init.OwnAddress1 = 0;
@@ -135,7 +135,7 @@ void MX_I2C2_Init(void)
   if (HAL_I2C_Init(&hi2c2) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
-  }*/
+  }
 
 }
 /* I2C3 init function */
