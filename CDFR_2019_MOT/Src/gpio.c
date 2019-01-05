@@ -171,6 +171,11 @@ void F_GPIO_SetLedGreen(int state){
 	(state) ? (GPIOB->ODR |= LED_Green) : (GPIOB->ODR &= ~LED_Green) ;
 }
 
+void F_GPIO_ToogleLedGreen(void){
+	// Led sur PB14
+	GPIOB->ODR ^= LED_Green;
+}
+
 void F_GPIO_ToogleLedRed(void){
 	if((GPIOB->ODR & LED_Red) > 0){
 		GPIOB->ODR &= ~LED_Red;

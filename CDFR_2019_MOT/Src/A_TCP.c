@@ -40,18 +40,18 @@ void F_TCP_answerTotab(uint8_t *array, struct tcp_answer s_cmd_answer)
 {
 	uint8_t i = 0, j = 0;
 
-	array[0] = (uint8_t)(0x000F & (s_cmd_answer.id >> 24));
-	array[1] = (uint8_t)(0x000F & (s_cmd_answer.id >> 16));
-	array[2] = (uint8_t)(0x000F & (s_cmd_answer.id >> 8));
-	array[3] = (uint8_t)(0x000F & s_cmd_answer.id);
+	array[0] = (uint8_t)(0x00FF & (s_cmd_answer.id >> 24));
+	array[1] = (uint8_t)(0x00FF & (s_cmd_answer.id >> 16));
+	array[2] = (uint8_t)(0x00FF & (s_cmd_answer.id >> 8));
+	array[3] = (uint8_t)(0x00FF & s_cmd_answer.id);
 	array[4] = s_cmd_answer.nb_octet;
 	array[5] = s_cmd_answer.cmd;
 	array[6] = s_cmd_answer.code_retour;
 
 	for(i=0;i<SIZE_PARAM_CMD;i++)
 	{
-		array[7+j] = (uint8_t)(0x000F & (s_cmd_answer.reponse[i] >> 8));
-		array[7+j+1] = (uint8_t)(0x000F & s_cmd_answer.reponse[i]);
+		array[7+j] = (uint8_t)(0x00FF & (s_cmd_answer.reponse[i] >> 8));
+		array[7+j+1] = (uint8_t)(0x00FF & s_cmd_answer.reponse[i]);
 
 		j+=2;
 	}

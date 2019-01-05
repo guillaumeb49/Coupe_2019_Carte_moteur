@@ -31,6 +31,10 @@ void F_Process_Command(struct tcp_command s_cmd_received, struct tcp_answer *s_c
 			status = F_Cmd_SetLED(s_cmd_received, s_cmd_answer);
 			break;
 
+		// Get LED
+		case CMD_GET_LED:
+			status = F_Cmd_GetLED(s_cmd_received, s_cmd_answer);
+			break;
 		// Get distances from sensors
 		case CMD_GET_DISTANCES:
 			break;
@@ -85,26 +89,25 @@ uint8_t F_Cmd_SetLED(struct tcp_command s_cmd_received, struct tcp_answer *s_cmd
 {
 	uint8_t status = STATUS_OK;
 	// All LEDs
-	if(s_cmd_received.params[0] == 0)
-	{
-		F_GPIO_SetLedRed(s_cmd_received.params[1]);
-		F_GPIO_SetLedBlue(s_cmd_received.params[1]);
-		F_GPIO_SetLedGreen(s_cmd_received.params[1]);
-	}
+
+		F_GPIO_SetLedRed(0);
+		F_GPIO_SetLedBlue(0);
+		F_GPIO_SetLedGreen(0);
+
 	// Red
-	else if(s_cmd_received.params[0] == 1)
+	if(s_cmd_received.params[0] & 0x01)
 	{
-		F_GPIO_SetLedRed(s_cmd_received.params[1]);
+		F_GPIO_SetLedBlue(1);
 	}
 	// blue
-	else if(s_cmd_received.params[0] == 2)
+	if(s_cmd_received.params[0] == 2)
 	{
-		F_GPIO_SetLedBlue(s_cmd_received.params[1]);
+		F_GPIO_SetLedGreen(1);
 	}
 	// Green
-	else if(s_cmd_received.params[0] == 3)
+	if(s_cmd_received.params[0] == 4)
 	{
-		F_GPIO_SetLedGreen(s_cmd_received.params[1]);
+		F_GPIO_SetLedRed(1);
 	}
 	else
 	{
@@ -119,3 +122,22 @@ uint8_t F_Cmd_SetLED(struct tcp_command s_cmd_received, struct tcp_answer *s_cmd
 
 	return status;
 }
+
+/**
+ * Set the on board LEDs
+ */
+uint8_t F_Cmd_GetLED(struct tcp_command s_cmd_received, struct tcp_answer *s_cmd_answer)
+{
+	uint8_t status = STATUS_OK;
+
+
+	s_cmd_answer->code_retour = status;
+	s_cmd_answer->reponse[0] = (((GPIOB->ODR & LED_Red) >> 14) << 2) + ((GPIOB->ODR & LED_Green) << 1) + (((GPIOB->ODR & LED_Blue) >> 7));
+	s_cmd_answer->reponse[1] = 0;
+	s_cmd_answer->reponse[2] = 0;
+	s_cmd_answer->reponse[3] = 0;
+
+	return status;
+}
+
+

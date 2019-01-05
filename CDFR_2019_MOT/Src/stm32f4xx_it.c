@@ -35,6 +35,8 @@
 #include "stm32f4xx.h"
 #include "stm32f4xx_it.h"
 
+#include "D_VL53L1X.h"
+
 /* USER CODE BEGIN 0 */
 extern char g_uart_buff;
 /* USER CODE END 0 */
@@ -158,6 +160,19 @@ void TIM4_IRQHandler(void)
   /* USER CODE BEGIN TIM4_IRQn 1 */
 
   /* USER CODE END TIM4_IRQn 1 */
+}
+
+/**
+* @brief This function handles TIM6 global interrupt.
+*/
+void TIM6_DAC_IRQHandler(void)
+{
+	// Cler interrupt flag
+	TIM6->SR &= ~ TIM_SR_UIF;
+	// Toogle LED
+	F_GPIO_ToogleLedGreen();
+	F_ReadMeasure_VL53L1X();
+
 }
 
 /**

@@ -56,6 +56,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
+#include "stm32f4xx.h"
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
@@ -75,6 +76,7 @@ void MX_GPIO_Init(void);
 void F_GPIO_SetLedRed(int state);
 void F_GPIO_SetLedBlue(int state);
 void F_GPIO_SetLedGreen(int state);
+void F_GPIO_ToogleLedGreen(void);
 void F_GPIO_ToogleLedRed(void);
 int  F_GPIO_GetLBtn(void);
 /* USER CODE END Prototypes */

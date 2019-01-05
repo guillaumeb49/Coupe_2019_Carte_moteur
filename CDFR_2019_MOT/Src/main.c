@@ -122,9 +122,15 @@ int main(void)
   
   MX_LWIP_Init();
 
+  F_GPIO_SetLedBlue(0);
+  F_GPIO_SetLedRed(0);
+  F_GPIO_SetLedGreen(1);
+
+
+
   /* USER CODE BEGIN 2 */
 
-  F_Init_VL53L1X();
+ // F_Init_VL53L1X();
 
 
   // Initialize the TCP Echo Server
