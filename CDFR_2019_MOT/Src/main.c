@@ -166,13 +166,19 @@ int main(void)
   	  		__asm("NOP");
   	  	}
 
+  	  	// Reset the VL53L1X
+  	 state = VL53L1X_software_reset(dev);
+
+  	 //  Here we will have to reset all devices and assign a new I2C adress for each of them
+
+
 
   /* Wait for device booted */
-  while((state) != 1)
+/*  while((state) != 1)
   {
 	  Status = VL53L1X_BootState(dev, &state);
 	  for(i = 0;i<65000;i++);
-  }
+  }*/
 
   /* Sensor Initialization */
   Status = VL53L1X_SensorInit(dev);

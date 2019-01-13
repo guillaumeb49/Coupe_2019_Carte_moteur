@@ -69,6 +69,12 @@ int8_t VL53L1_WaitMs(
 		VL53L1_Dev_t *pdev,
 		int32_t       wait_ms);
 
+/**
+ * @brief VL53L1_WaitUs() definition.
+ * Wait wait_us us : this is a blocking dunction.
+ */
+int8_t VL53L1_WaitUs(VL53L1_Dev_t *pdev, int32_t wait_us);
+
 #ifdef __cplusplus
 }
 #endif

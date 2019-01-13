@@ -519,8 +519,12 @@ VL53L1X_ERROR VL53L1X_BootState(VL53L1_Dev_t dev, uint8_t *state)
 	VL53L1X_ERROR status = 0;
 	uint8_t tmp = 0;
 
+	/* after reset for the firmware blocks I2C access while
+	 * it copies the NVM data into the G02 host register banks
+	 * The host must wait the required time to allow the copy
+	 * to complete before attempting to read the firmware status */
 
-	status = VL53L1_RdByte(&dev,VL53L1_IDENTIFICATION__MODEL_ID, &tmp); //TEST Model ID index = 0x010F should be 0xEA
+	status = VL53L1_WaitUs(&dev, VL53L1_FIRMWARE_BOOT_TIME_US);
 
 	status = VL53L1_RdByte(&dev,VL53L1_FIRMWARE__SYSTEM_STATUS, &tmp);
 	*state = tmp;
@@ -847,5 +851,43 @@ VL53L1X_ERROR VL53L1X_StartTemperatureUpdate(VL53L1_Dev_t dev)
 	status = VL53L1X_StopRanging(dev);
 	status = VL53L1_WrByte(&dev, VL53L1_VHV_CONFIG__TIMEOUT_MACROP_LOOP_BOUND, 0x09); /* two bounds VHV */
 	status = VL53L1_WrByte(&dev, 0x0B, 0); /* start VHV from the previous temperature */
+	return status;
+}
+
+
+/**
+ * Sets and clears the software reset register VL53L1_SOFT_RESET.
+ * and waits for the firmware to boot
+ */
+VL53L1X_ERROR VL53L1X_software_reset(VL53L1_Dev_t Dev)
+{
+
+
+	VL53L1X_ERROR status = 0x00;
+
+	/* apply reset - note despite the name soft reset is active low! */
+	status = VL53L1_WrByte(&Dev,SOFT_RESET,0x00);
+
+	/* wait for a while before releasing the reset */
+	if (status == 0x00){
+		status = VL53L1_WaitUs(&Dev, VL53L1_SOFTWARE_RESET_DURATION_US);
+	}
+
+	/* release reset */
+	if (status == 0x00){
+		status = VL53L1_WrByte(&Dev,SOFT_RESET,0x01);
+	}
+
+
+	/* wait for firmware boot to complete */
+	if (status == 0x00){
+		VL53L1X_BootState(Dev, &status);
+	}
+
+	if(status != 0x00)
+	{
+		status = VL53L1X_STATUS_ERREUR;
+	}
+
 	return status;
 }

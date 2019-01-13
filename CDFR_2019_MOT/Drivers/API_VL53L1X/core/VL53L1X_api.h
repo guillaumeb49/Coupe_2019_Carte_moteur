@@ -75,7 +75,7 @@
 #define VL53L1X_IMPLEMENTATION_VER_SUB         1
 #define VL53L1X_IMPLEMENTATION_VER_REVISION  0000
 
-typedef int8_t VL53L1X_ERROR;
+typedef uint8_t VL53L1X_ERROR;
 
 #define SOFT_RESET											0x0000
 #define VL53L1_I2C_SLAVE__DEVICE_ADDRESS					0x0001
@@ -118,6 +118,24 @@ typedef int8_t VL53L1X_ERROR;
 #define VL53L1_FIRMWARE__SYSTEM_STATUS                      0x00E5
 #define VL53L1_IDENTIFICATION__MODEL_ID                     0x010F
 #define VL53L1_ROI_CONFIG__MODE_ROI_CENTRE_SPAD				0x013E
+
+#define VL53L1X_STATUS_OK		0
+#define VL53L1X_STATUS_ERREUR	1
+
+/*!< 1000us delay for register polling */
+#define VL53L1_POLLING_DELAY_US                     1000
+
+/*!< 100us software reset duration */
+#define VL53L1_SOFTWARE_RESET_DURATION_US            100
+
+/*!< Duration of firmware boot time for which I2C
+	 access is blocked. Real Device 1ms, FPGA 15ms */
+#define VL53L1_FIRMWARE_BOOT_TIME_US                1200
+
+/*!< After enabling power force a delay is required
+	to bring regulator, bandgap, oscillator time
+	to power up and settle */
+#define VL53L1_ENABLE_POWERFORCE_SETTLING_TIME_US    250
 
 /****************************************
  * PRIVATE define do not edit
@@ -362,5 +380,10 @@ VL53L1X_ERROR VL53L1X_GetSigmaThreshold(VL53L1_Dev_t dev, uint16_t *signal);
  * without sensor ranging activity for an extended period.
  */
 VL53L1X_ERROR VL53L1X_StartTemperatureUpdate(VL53L1_Dev_t dev);
+
+/**
+ * Reset the VL53L1X and wait for boot completed
+ */
+VL53L1X_ERROR VL53L1X_software_reset(VL53L1_Dev_t Dev);
 
 #endif

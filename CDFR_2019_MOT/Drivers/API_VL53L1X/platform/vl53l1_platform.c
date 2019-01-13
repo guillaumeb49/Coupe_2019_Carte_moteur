@@ -106,6 +106,10 @@ int8_t VL53L1_RdDWord(VL53L1_DEV Dev, uint16_t index, uint32_t *data) {
 	return status; // to be implemented
 }
 
-int8_t VL53L1_WaitMs(VL53L1_Dev_t *pdev, int32_t wait_ms){
+int8_t VL53L1_WaitMs(VL53L1_DEV dev, int32_t wait_ms){
+	return 0; // to be implemented
+}
+
+int8_t VL53L1_WaitUs(VL53L1_DEV dev, int32_t wait_us){
 	return 0; // to be implemented
 }
