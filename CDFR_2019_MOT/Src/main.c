@@ -57,7 +57,7 @@
 #include "tcp_server.h"
 #include "D_LCD.h"
 #include "A_TCP.h"
-
+#include "../Drivers/API_VL53L1X/core/VL53L1X_api.h"
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
@@ -90,6 +90,15 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   /* USER CODE END 1 */
+
+	uint8_t Status = 0;
+	uint8_t dataReady = 0;
+	uint8_t state = 0;
+	VL53L1_Dev_t dev;
+	dev.addr = 0x52;
+	uint16_t distance = 0;
+	uint8_t rangeStatus = 0;
+	uint32_t i = 0;
 
   /* MCU Configuration----------------------------------------------------------*/
 
@@ -131,6 +140,67 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
  // F_Init_VL53L1X();
+
+  // Enable clock on GPIOF (Normally should already be the case)
+  	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOFEN;
+
+  	// Configure PF2 as output to drive the Xshunt pin of the VL53L1
+  	GPIOF->MODER &= ~GPIO_MODER_MODE2;
+  	GPIOF->MODER |= GPIO_MODER_MODE2_0;
+
+  	// Set PF2 low
+  	GPIOF->ODR &=~ GPIO_ODR_OD2;
+
+  	// small delay
+  	for(i=0;i<65000;i++)
+  	{
+  		__asm("NOP");
+  	}
+
+  	// Set PF2 high
+  	GPIOF->ODR |= GPIO_ODR_OD2;
+
+  	// small delay
+  	  	for(i=0;i<65000;i++)
+  	  	{
+  	  		__asm("NOP");
+  	  	}
+
+
+  /* Wait for device booted */
+  while((state) != 1)
+  {
+	  Status = VL53L1X_BootState(dev, &state);
+	  for(i = 0;i<65000;i++);
+  }
+
+  /* Sensor Initialization */
+  Status = VL53L1X_SensorInit(dev);
+
+  /* Modify the default configuration */
+//  Status = VL53L1X_SetInterMeasurementInMs();
+  //Status = VL53L1X_SetOffset();
+
+  /* enable the ranging*/
+  Status = VL53L1X_StartRanging(dev);
+  /* ranging loop */
+
+  while(1)
+  {
+	  while(dataReady==0)
+	  {
+		  Status = VL53L1X_CheckForDataReady(dev, &dataReady);
+	  }
+
+  dataReady = 0;
+  Status = VL53L1X_GetRangeStatus(dev,&rangeStatus);
+  Status = VL53L1X_GetDistance(dev, &distance);
+  Status = VL53L1X_ClearInterrupt(dev);
+  }
+
+
+
+
 
 
   // Initialize the TCP Echo Server

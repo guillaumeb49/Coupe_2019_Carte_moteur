@@ -519,6 +519,9 @@ VL53L1X_ERROR VL53L1X_BootState(VL53L1_Dev_t dev, uint8_t *state)
 	VL53L1X_ERROR status = 0;
 	uint8_t tmp = 0;
 
+
+	status = VL53L1_RdByte(&dev,VL53L1_IDENTIFICATION__MODEL_ID, &tmp); //TEST Model ID index = 0x010F should be 0xEA
+
 	status = VL53L1_RdByte(&dev,VL53L1_FIRMWARE__SYSTEM_STATUS, &tmp);
 	*state = tmp;
 	return status;

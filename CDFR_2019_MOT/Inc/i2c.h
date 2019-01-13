@@ -69,8 +69,8 @@ extern I2C_HandleTypeDef hi2c3;
 
 /* USER CODE BEGIN Private defines */
 #define I2C_TIMEOUT 	100000
-#define I2C_STATUS_OK  	1
-#define I2C_STATUS_KO 	0
+#define I2C_STATUS_OK  	0
+#define I2C_STATUS_KO 	1
 
 /* USER CODE END Private defines */
 

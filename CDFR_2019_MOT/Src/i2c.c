@@ -712,7 +712,8 @@ int F_I2C2_ReadRegister(uint8_t slave_addr, uint8_t register_addr,uint8_t regist
 
 // Read x value from the device
 uint8_t F_I2C2_ReadRegisterVL53L1X(uint8_t slave_addr, uint16_t register_addr, uint8_t nb_value_to_read, uint8_t *value_read){
-	uint8_t i2c_status = I2C_STATUS_OK;	// Init return value to error
+	uint8_t i2c_status = 0;	// Init return value to error
+	uint8_t status = I2C_STATUS_OK;
 	int timeout=0;
 
 	uint8_t i = 0;
@@ -785,7 +786,7 @@ uint8_t F_I2C2_ReadRegisterVL53L1X(uint8_t slave_addr, uint16_t register_addr, u
 
 	// send STOP bit
 	I2C2->CR1 |= I2C_CR1_STOP;
-	return i2c_status;
+	return status;
 }
 
 /* USER CODE END 1 */
